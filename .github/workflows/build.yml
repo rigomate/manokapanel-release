@@ -36,5 +36,20 @@ jobs:
 
     - name: Build Firmware
       run: |
-        # Add your build commands here
-        # For example: scons
+        ./build.sh
+
+    - name: Get Short Commit Hash
+      id: commit
+      run: echo "::set-output name=hash::$(git rev-parse --short HEAD)"
+
+    - name: Create Tarball
+      run: |
+        tar -czvf firmware-artifacts-${{ steps.commit.outputs.hash }}.tar.gz \
+          manokapanel_src/build/manokapanel.elf \
+          manokapanel_src/build/manokapanel.map
+
+    - name: Archive and Upload Tarball
+      uses: actions/upload-artifact@v2
+      with:
+        name: firmware-artifacts
+        path: firmware-artifacts-${{ steps.commit.outputs.hash }}.tar.gz
