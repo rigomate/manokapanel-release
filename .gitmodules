@@ -1,6 +1,6 @@
 [submodule "stm32plus"]
 	path = stm32plus
-	url = https://sikolymester@bitbucket.org/sikolymester/stm32plus.git
+	url = git@github.com:rigomate/stm32plus.git
 [submodule "manokapanel_src"]
 	path = manokapanel_src
-	url = https://sikolymester@bitbucket.org/sikolymester/manokapanel_src.git
+	url = git@github.com:rigomate/manokapanel.git
