@@ -1,0 +1,55 @@
+name: Build Firmware
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository with Submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'  # Use recursive submodule checkout
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install pip
+      run: |
+        python -m pip install --upgrade pip
+        pip install wheel
+
+    - name: Install SCons
+      run: |
+        pip install scons
+
+    - name: Install arm-none-eabi-g++
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y gcc-arm-none-eabi
+
+    - name: Build Firmware
+      run: |
+        ./build.sh
+
+    - name: Get Short Commit Hash
+      id: commit
+      run: echo "::set-output name=hash::$(git rev-parse --short HEAD)"
+
+    - name: Create Tarball
+      run: |
+        tar -czvf firmware-artifacts-${{ steps.commit.outputs.hash }}.tar.gz \
+          manokapanel_src/build/manokapanel.elf \
+          manokapanel_src/build/manokapanel.map
+
+    - name: Archive and Upload Tarball
+      uses: actions/upload-artifact@v2
+      with:
+        name: firmware-artifacts
+        path: firmware-artifacts-${{ steps.commit.outputs.hash }}.tar.gz
